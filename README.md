@@ -16,7 +16,7 @@ The base image also includes:
 - Emscripten SDK 6.0.9 at `/home/user/emsdk` (`emcc` / `em++` on `PATH`)
 - vcpkg at `/home/user/vcpkg` (`VCPKG_ROOT=/home/user/vcpkg`), checked out at the baseline in `vcpkg-configuration.json` (full clone, then checkout)
 - LLVM 18, with unversioned `clang`, `clang++`, `lld`, `clang-format`, and `clang-tidy`
-- Microsoft ODBC Driver 18 and Node.js 22
+- Microsoft ODBC Driver 18 and Node.js 26
 - mdBook 0.4.44 at `/usr/local/bin/mdbook`
 
 Each triplet install writes `/tmp/vcpkg_installed` and the Dockerfile removes that tree. Precompiled packages are kept in the binary cache at `/home/user/.cache/vcpkg/archives`. The four triplet stages (`x64-linux`, `wasm`, `mingw`, `arm64`) each build directly from `base`, so BuildKit builds them in parallel; each cross stage rebuilds its own x64-linux host tools instead of inheriting them from the `x64-linux` stage. The final image merges the four stages' archives into the same cache in a single layer and copies the Emscripten SDK from the `wasm` stage. No overlay recipes are checked in. `grpc` 1.81.1#1, including `00017-mingw-bigobj.patch`, and `nanodbc` 2.14.0#1 come from the `vcpkg-updates` registry at baseline `a3cd7e6cb12e14d4e84d11f61403f6fe06c779c1`. The dbus session socket dir for arm64 cross builds is set in `arm64-linux-dynamic.cmake`.

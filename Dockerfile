@@ -250,13 +250,6 @@ RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod
     ACCEPT_EULA=Y apt-get install -y --no-install-recommends msodbcsql18 && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Node.js 22.x from NodeSource (includes npm and npx)
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y --no-install-recommends nodejs && \
-    rm -rf /var/lib/apt/lists/*
-
-
-
 # Install vcpkg and check out the baseline commit from vcpkg-configuration.json.
 # Full clone, then checkout; the baseline is not fetched shallow.
 ENV VCPKG_ROOT=/home/user/vcpkg
@@ -422,6 +415,12 @@ RUN --mount=type=bind,from=x64-linux,source=/home/user/.cache/vcpkg/archives,tar
 # descends from base, which never set them, so they stay unset in the
 # published image (in particular VCPKG_FORCE_SYSTEM_BINARIES, which must
 # remain unset for native x64 configures in the running container).
+
+# Node.js 26.x from NodeSource (includes npm and npx)
+RUN curl -fsSL https://deb.nodesource.com/setup_26.x | bash - && \
+    apt-get install -y --no-install-recommends nodejs && \
+    rm -rf /var/lib/apt/lists/* && \
+    node --version
 
 # mdBook static binary for the amd64 image (Kitware and LLVM are amd64-only).
 ARG MDBOOK_VERSION=0.4.44
